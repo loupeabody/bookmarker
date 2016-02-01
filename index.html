@@ -1,0 +1,171 @@
+<!doctype html>
+<html ng-app="bookmarker">
+	<head>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<style>
+			html { box-sizing: border-box; }
+			*,*:before,*:after { box-sizing: inherit; }
+			body { font-family: monospace; }
+			.active { font-weight: 800; }
+			button, .delete {
+				font-size: 9px;
+				font-family: inherit;
+				background: none;
+				outline: 0;
+				padding: 3px;
+				border: 0;
+				cursor: pointer;
+			}
+			li button { color: rgba(0,0,0,0.6); }
+			li:hover button { color: rgba(0,0,0,1); }
+			button:active { background-color: red; }
+			ul {
+				margin-top: 0;
+				list-style-type: none;
+				padding-left: 5px;
+			}
+			li:before { content: "-"; }
+			.section-label {
+				margin-bottom: 5px;
+				font-size: 12px;
+				letter-spacing: 1px;
+				font-variant: small-caps;
+			}
+			input, select {
+				min-width: 200px;
+				height: 20px;
+				display: block;
+				margin-bottom: 5px;
+				font-family: inherit;
+			}
+			.messages {
+				max-width: 200px;
+				font-size: 10px;
+				text-align: center;
+				margin-bottom: 6px;
+			}
+			.message-alert,
+			.message-alert--valid,
+			.message-alert--invalid {
+				display: block;
+				padding: 5px;
+				border-top: 2px solid #fff;
+				border-bottom: 2px solid #fff;
+				background: #ECECEC;
+			}
+			.message-alert--invalid { background: salmon; }
+			.message-alert--valid { background: #1DE9B6; }
+			input.ng-valid.ng-dirty, select.ng-valid.ng-dirty { border: 2px solid #1DE9B6; }
+			input.ng-invalid.ng-dirty, select.ng-invalid.ng-dirty { border: 2px solid salmon; }
+			.addSelect.ng-empty { color: rgba(0,0,0,0.6); }
+			.addSelect, .editSelect { color: initial; }
+			input { padding-left: 5px; }
+		</style>
+	</head>
+	<body ng-controller="bookmarkerMain as main">
+		<header ng-controller="categoryList as nav">
+			<a href="#" ng-click="setCurrentCategory()">bookmarker</a>
+			<nav>
+				<h1 class="section-label">categories</h1>
+				<ul>
+					<li ng-repeat="category in categories" ng-class="{'active':isCurrentCategory(category)}">
+						<a href="" ng-click="setCurrentCategory(category)">{{category.name}}</a>
+					</li>
+				</ul>
+			</nav>
+		</header>
+		<div ng-controller="listBookmark as list">
+			<h1 class="section-label">bookmarks</h1>
+			<ul>
+				<li ng-repeat="bookmark in bookmarks | filter:{category:currentCategory.name}">
+					<a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a>
+					<button ng-click="startEditing(bookmark)">edit</button>
+				</li>
+			</ul>
+			<button ng-click="startCreating()">&plus; add</button>
+		</div>
+		<hr>
+		<div ng-controller="createBookmark as create" >
+			<form ng-show="shouldShowCreating()" role="form" name="createForm">
+				<div class="messages">
+					<span class="message-alert">
+						Add a new bookmark
+					</span>
+				</div>
+				<input type="text" placeholder="Title?" ng-model="newBookmark.title" required>
+				<input type="text" placeholder="URL?" ng-model="newBookmark.url" required>
+				<select class="addSelect" ng-model="newBookmark.category" required>
+					<option value="" disabled>Category?</option>
+					<option ng-repeat="category in categories" value="{{category.name}}">{{category.name}}</option>
+				</select>
+				<input type="submit" ng-disabled="createForm.$invalid" ng-click="createBookmark(newBookmark)" value="Submit">
+				<input type="button" ng-click="cancelCreating()" value="cancel">
+				<div class="messages">
+					<span class="message-alert--valid"
+								ng-show="createForm.$valid">
+						Your bookmark is valid!
+					</span>
+					<span class="message-alert--invalid"
+								ng-show="createForm.newBookmarkTitle.$dirty 
+											&& createForm.newBookmarkTitle.$error.required">
+						Your bookmark needs a title
+					</span>
+					<span class="message-alert--invalid"
+								ng-show="createForm.newBookmarkUrl.$dirty
+											&& createForm.newBookmarkUrl.$error.required">
+						Your bookmark needs a url
+					</span>
+					<span class="message-alert--invalid"
+								ng-show="createForm.newBookmarkCategory.$dirty
+											&& createForm.newBookmarkCategory.$error.required">
+						Your bookmark needs a category
+					</span>
+				</div>
+			</form>
+		</div>
+		<div ng-controller="editBookmark as edit" >
+			<form ng-show="shouldShowEditing()" role="form" name="editForm">
+				<div class="messages">
+					<span class="message-alert">
+						Edit this bookmark
+					</span>
+				</div>
+				<input type="text" ng-model="editedBookmark.title" required>
+				<input type="text" ng-model="editedBookmark.url" required>
+				<select class="editSelect" ng-model="editedBookmark.category" required>
+					<option value="" disabled>Category?</option>
+					<option ng-repeat="category in categories" value="{{category.name}}">{{category.name}}</option>
+				</select>
+				<input type="submit" ng-click="updateBookmark(editedBookmark)" value="Submit">
+				<input type="button" ng-click="cancelEditing()" value="cancel">
+				<input type="button" ng-click="deleteBookmark(currentBookmark)" value="delete">
+				<div class="messages">
+					<span class="message-alert--valid"
+								ng-show="editForm.$valid">
+						Your bookmark is valid!
+					</span>
+					<span class="message-alert--invalid"
+								ng-show="editForm.newBookmarkTitle.$dirty 
+											&& editForm.newBookmarkTitle.$error.required">
+						Your bookmark needs a title
+					</span>
+					<span class="message-alert--invalid"
+								ng-show="editForm.newBookmarkUrl.$dirty
+											&& editForm.newBookmarkUrl.$error.required">
+						Your bookmark needs a url
+					</span>
+					<span class="message-alert--invalid"
+								ng-show="editForm.newBookmarkCategory.$dirty
+											&& editForm.newBookmarkCategory.$error.required">
+						Your bookmark needs a category
+					</span>
+				</div>
+			</form>
+		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-rc.0/angular.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-data/2.8.2/js-data.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-data-angular/3.1.0/js-data-angular.js"></script>
+		<script src="app/app.build.js"></script>
+	</body>
+</html>
