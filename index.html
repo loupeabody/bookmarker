@@ -55,10 +55,13 @@
 			}
 			.message-alert--invalid { background: salmon; }
 			.message-alert--valid { background: #1DE9B6; }
-			input.ng-valid.ng-dirty, select.ng-valid.ng-dirty { border: 2px solid #1DE9B6; }
-			input.ng-invalid.ng-dirty, select.ng-invalid.ng-dirty { border: 2px solid salmon; }
+			input.ng-valid.ng-dirty,
+			select.ng-valid.ng-dirty { border: 2px solid #1DE9B6; }
+			input.ng-invalid.ng-dirty,
+			select.ng-invalid.ng-dirty { border: 2px solid salmon; }
 			.addSelect.ng-empty { color: rgba(0,0,0,0.6); }
-			.addSelect, .editSelect { color: initial; }
+			.addSelect,
+			.editSelect { color: initial; }
 			input { padding-left: 5px; }
 		</style>
 	</head>
@@ -92,32 +95,29 @@
 						Add a new bookmark
 					</span>
 				</div>
-				<input type="text" placeholder="Title?" ng-model="newBookmark.title" required>
-				<input type="text" placeholder="URL?" ng-model="newBookmark.url" required>
-				<select class="addSelect" ng-model="newBookmark.category" required>
+				<input type="text" placeholder="Title?" ng-model="newBookmark.title" name="newBookmarkTitle" required>
+				<input type="text" placeholder="URL?" ng-model="newBookmark.url" name="newBookmarkUrl" required>
+				<select class="addSelect" ng-model="newBookmark.category" name="newBookmarkCategory" required>
 					<option value="" disabled>Category?</option>
 					<option ng-repeat="category in categories" value="{{category.name}}">{{category.name}}</option>
 				</select>
-				<input type="submit" ng-disabled="createForm.$invalid" ng-click="createBookmark(newBookmark)" value="Submit">
-				<input type="button" ng-click="cancelCreating()" value="cancel">
+				<input type="submit" ng-disabled="createForm.$invalid" ng-click="createBookmark(newBookmark,createForm)" value="Submit">
+				<input type="button" ng-click="cancelCreating(createForm)" value="cancel">
 				<div class="messages">
 					<span class="message-alert--valid"
 								ng-show="createForm.$valid">
 						Your bookmark is valid!
 					</span>
 					<span class="message-alert--invalid"
-								ng-show="createForm.newBookmarkTitle.$dirty 
-											&& createForm.newBookmarkTitle.$error.required">
+								ng-show="createForm.newBookmarkTitle.$error.required && createForm.newBookmarkTitle.$touched">
 						Your bookmark needs a title
 					</span>
 					<span class="message-alert--invalid"
-								ng-show="createForm.newBookmarkUrl.$dirty
-											&& createForm.newBookmarkUrl.$error.required">
+								ng-show="createForm.newBookmarkUrl.$error.required && createForm.newBookmarkUrl.$touched">
 						Your bookmark needs a url
 					</span>
 					<span class="message-alert--invalid"
-								ng-show="createForm.newBookmarkCategory.$dirty
-											&& createForm.newBookmarkCategory.$error.required">
+								ng-show="createForm.newBookmarkCategory.$error.required && createForm.newBookmarkCategory.$touched">
 						Your bookmark needs a category
 					</span>
 				</div>

@@ -33,22 +33,29 @@
 
 	function createBookmark($scope) {
 
-		$scope.createBookmark = function(bookmark) {
+		var form = $scope.createForm
+
+		$scope.createBookmark = function(bookmark,form) {
 			bookmark.id = $scope.bookmarks.length
 			$scope.$parent.bookmarks.push(bookmark)
-
-			resetCreateForm()
+			resetCreateForm(form)
 		}
 
-		$scope.cancelCreating = function() {
+		$scope.cancelCreating = function(form) {
 			$scope.$parent.isCreating = false
+			console.log(form)
+			resetCreateForm(form)
 		}
 
-		function resetCreateForm(){
+		function resetCreateForm(form){
 			$scope.newBookmark = { title: '', url: '', category: $scope.$parent.currentCategory }
+			form.$setPristine()
+			form.$setUntouched()
 		}
 
 		$scope.shouldShowCreating = function() { return $scope.$parent.isCreating && !$scope.$parent.isEditing }
+
+		$scope.debug = function(form) { console.log(form) }
 
 	}
 
