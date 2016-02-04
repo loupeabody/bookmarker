@@ -92,45 +92,8 @@
 			<create-form></create-form>
 		</div>
 		<div ng-controller="editBookmark as edit" >
-			<form ng-show="shouldShowEditing()" role="form" name="editForm">
-				<div class="messages">
-					<span class="message-alert">
-						Edit this bookmark
-					</span>
-				</div>
-				<input type="text" ng-model="editedBookmark.title" required>
-				<input type="text" ng-model="editedBookmark.url" required>
-				<select class="editSelect" ng-model="editedBookmark.category" required>
-					<option value="" disabled>Category?</option>
-					<option ng-repeat="category in categories" value="{{category.name}}">{{category.name}}</option>
-				</select>
-				<input type="submit" ng-click="updateBookmark(editedBookmark)" value="Submit">
-				<input type="button" ng-click="cancelEditing()" value="cancel">
-				<input type="button" ng-click="deleteBookmark(currentBookmark)" value="delete">
-				<div class="messages">
-					<span class="message-alert--valid"
-								ng-show="editForm.$valid">
-						Your bookmark is valid!
-					</span>
-					<span class="message-alert--invalid"
-								ng-show="editForm.newBookmarkTitle.$dirty 
-											&& editForm.newBookmarkTitle.$error.required">
-						Your bookmark needs a title
-					</span>
-					<span class="message-alert--invalid"
-								ng-show="editForm.newBookmarkUrl.$dirty
-											&& editForm.newBookmarkUrl.$error.required">
-						Your bookmark needs a url
-					</span>
-					<span class="message-alert--invalid"
-								ng-show="editForm.newBookmarkCategory.$dirty
-											&& editForm.newBookmarkCategory.$error.required">
-						Your bookmark needs a category
-					</span>
-				</div>
-			</form>
+			<edit-form></edit-form>
 		</div>
-
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-rc.0/angular.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-data/2.8.2/js-data.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-data-angular/3.1.0/js-data-angular.js"></script>
