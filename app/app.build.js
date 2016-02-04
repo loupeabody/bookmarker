@@ -63,6 +63,17 @@
 		.module('bookmarks')
 		.controller('createBookmark', ['$scope', createBookmark])
 
+	function createForm() {
+		return {
+			restrict: 'E',
+			templateUrl: 'app/bookmarks/bookmarkCreate.directive.html'
+		}
+	}
+
+	angular
+		.module('bookmarks') 
+		.directive('createForm',createForm)
+
 	function deleteBookmark($scope) {
 		$scope.deleteBookmark = function(bookmark) {
 			var index = $scope.$parent.bookmarks.indexOf(bookmark)
