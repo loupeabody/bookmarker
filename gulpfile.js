@@ -4,7 +4,7 @@ var gulp = require("gulp"),
 		livereload = require("gulp-livereload")
 
 var paths = {
-	scripts: ['app/app.js','app/**/*.js','!app/app.build.js']
+	scripts: ['app/app.js','app/**/*.js','app/**/*.directive.html','!app/app.build.js']
 }
 
 gulp.task('build', function() {

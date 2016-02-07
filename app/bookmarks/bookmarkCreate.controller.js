@@ -1,31 +1,29 @@
-	function createBookmark($scope) {
+	function createBookmark(datastore) {
 
-		var form = $scope.createForm
+		this.datastore = datastore
 
-		$scope.createBookmark = function(bookmark,form) {
-			bookmark.id = $scope.bookmarks.length
-			$scope.$parent.bookmarks.push(bookmark)
+		this.createBookmark = function(bookmark,form) {
+			bookmark.id = datastore.bookmarks.length
+			datastore.bookmarks.push(bookmark)
 			resetCreateForm(form)
 		}
 
-		$scope.cancelCreating = function(form) {
-			$scope.$parent.isCreating = false
-			console.log(form)
+		this.cancelCreating = function(form) {
 			resetCreateForm(form)
+			datastore.isCreating = false
+			console.log(form)
 		}
 
 		function resetCreateForm(form){
-			$scope.newBookmark = { title: '', url: '', category: $scope.$parent.currentCategory }
+			this.newBookmark = { title: '', url: '', category: datastore.currentCategory }
 			form.$setPristine()
 			form.$setUntouched()
 		}
 
-		$scope.shouldShowCreating = function() { return $scope.$parent.isCreating && !$scope.$parent.isEditing }
-
-		$scope.debug = function(form) { console.log(form) }
+		this.shouldShowCreating = function() { return datastore.isCreating && !datastore.isEditing }
 
 	}
 
 	angular
 		.module('bookmarks')
-		.controller('createBookmark', ['$scope', createBookmark])
+		.controller('createBookmark', ['datastore',createBookmark])

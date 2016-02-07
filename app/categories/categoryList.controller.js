@@ -1,17 +1,20 @@
-	function categoryList($scope) {
-		$scope.setCurrentCategory = function(category) { 
-			if (!category) { $scope.$parent.currentCategory = null }
-			else $scope.$parent.currentCategory = category
-			$scope.$parent.isCreating = false
-			$scope.$parent.isEditing = false
+	function categoryList(datastore) {
+
+		this.datastore = datastore
+
+		this.setCurrentCategory = function(category) { 
+			if (!category) { datastore.currentCategory = null }
+			else datastore.currentCategory = category
+			datastore.isCreating = false
+			datastore.isEditing = false
 		}
 
-		$scope.isCurrentCategory = function(category) {
+		this.isCurrentCategory = function(category) {
 			if (category === null) { return false }
-			return $scope.$parent.currentCategory !== null && category.name === $scope.$parent.currentCategory.name
+			return datastore.currentCategory !== null && category.name === datastore.currentCategory.name
 		}
 	}
 
 	angular
 		.module('categories')
-		.controller('categoryList', ['$scope', categoryList])
+		.controller('categoryList', ['datastore', categoryList])

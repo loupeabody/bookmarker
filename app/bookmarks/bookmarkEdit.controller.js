@@ -1,23 +1,41 @@
-	function editBookmark($scope) {
+	function editBookmark(datastore) {
 
-		$scope.cancelEditing = function() {
-			$scope.$parent.isEditing = false
+		this.datastore = datastore
+
+		this.editedBookmark = {
+			title: datastore.currentBookmark.title,
+			url: datastore.currentBookmark.url,
+			category: datastore.currentBookmark.category
 		}
 
-		$scope.initEditForm = function() {
-			$scope.editedBookmark = {
-				title: $scope.$parent.currentBookmark.title,
-				url: $scope.$parent.currentBookmark.url,
-				category: $scope.$parent.currentBookmark.category
+		this.updateBookmark = function() {}
+
+		this.cancelEditing = function(form) {
+			resetEditForm(form)
+			datastore.isEditing = false
+		}
+
+		this.shouldShowEditing = function() {
+			return datastore.isEditing && !datastore.isCreating
+		}
+
+		function resetEditForm(form) {
+			this.editedBookmark = {
+				title: datastore.currentBookmark.title,
+				url: datastore.currentBookmark.url,
+				category: datastore.currentBookmark.category
 			}
+			form.$setPristine()
+			form.$setUntouched()
 		}
 
-		$scope.shouldShowEditing = function() {
-			$scope.initEditForm()
-			return $scope.$parent.isEditing && !$scope.$parent.isCreating
+		this.deleteBookmark = function(bookmark) {
+			var index = datastore.bookmarks.indexOf(bookmark)
+			datastore.bookmarks.splice(index, 1)
+			datastore.isEditing = false
 		}
 	}
 
 	angular
 		.module('bookmarks')
-		.controller('editBookmark', ['$scope', editBookmark])
+		.controller('editBookmark', ['datastore', editBookmark])

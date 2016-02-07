@@ -65,14 +65,14 @@
 			input { padding-left: 5px; }
 		</style>
 	</head>
-	<body ng-controller="bookmarkerMain as main">
+	<body>
 		<header ng-controller="categoryList as nav">
-			<a href="#" ng-click="setCurrentCategory()">bookmarker</a>
+			<a href="#" ng-click="nav.setCurrentCategory()">bookmarker</a>
 			<nav>
 				<h1 class="section-label">categories</h1>
 				<ul>
-					<li ng-repeat="category in categories" ng-class="{'active':isCurrentCategory(category)}">
-						<a href="" ng-click="setCurrentCategory(category)">{{category.name}}</a>
+					<li ng-repeat="category in nav.datastore.categories" ng-class="{'active':nav.isCurrentCategory(category)}">
+						<a href="" ng-click="nav.setCurrentCategory(category)">{{category.name}}</a>
 					</li>
 				</ul>
 			</nav>
@@ -80,12 +80,12 @@
 		<div ng-controller="listBookmark as list">
 			<h1 class="section-label">bookmarks</h1>
 			<ul>
-				<li ng-repeat="bookmark in bookmarks | filter:{category:currentCategory.name}">
+				<li ng-repeat="bookmark in list.datastore.bookmarks | filter:{category:currentCategory.name}">
 					<a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a>
-					<button ng-click="startEditing(bookmark)">edit</button>
+					<button ng-click="list.startEditing(bookmark)">edit</button>
 				</li>
 			</ul>
-			<button ng-click="startCreating()">&plus; add</button>
+			<button ng-click="list.startCreating()">&plus; add</button>
 		</div>
 		<hr>
 		<div ng-controller="createBookmark as create">

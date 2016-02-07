@@ -1,31 +1,31 @@
-		<form ng-show="shouldShowCreating()" role="form" name="createForm">
-				<div class="messages">
-					<span class="message-alert">Add a new bookmark</span>
-				</div>
-				<input type="text" placeholder="Title?" ng-model="newBookmark.title" name="newBookmarkTitle" required>
-				<input type="text" placeholder="URL?" ng-model="newBookmark.url" name="newBookmarkUrl" required>
-				<select class="addSelect" ng-model="newBookmark.category" name="newBookmarkCategory" required>
-					<option value="" disabled>Category?</option>
-					<option ng-repeat="category in categories" value="{{category.name}}">{{category.name}}</option>
-				</select>
-				<input type="submit" ng-disabled="createForm.$invalid" ng-click="createBookmark(newBookmark,createForm)" value="Submit">
-				<input type="button" ng-click="cancelCreating(createForm)" value="cancel">
-				<div class="messages">
-					<span class="message-alert--valid"
-								ng-show="createForm.$valid">
-						Your bookmark is valid!
-					</span>
-					<span class="message-alert--invalid"
-								ng-show="createForm.newBookmarkTitle.$error.required && createForm.newBookmarkTitle.$touched">
-						Your bookmark needs a title
-					</span>
-					<span class="message-alert--invalid"
-								ng-show="createForm.newBookmarkUrl.$error.required && createForm.newBookmarkUrl.$touched">
-						Your bookmark needs a url
-					</span>
-					<span class="message-alert--invalid"
-								ng-show="createForm.newBookmarkCategory.$error.required && createForm.newBookmarkCategory.$touched">
-						Your bookmark needs a category
-					</span>
-				</div>
-			</form>
+		<form ng-show="create.shouldShowCreating()" role="form" name="create.form">
+			<div class="messages">
+				<span class="message-alert">Add a new bookmark</span>
+			</div>
+			<input type="text" placeholder="Title?" ng-model="newBookmark.title" name="newBookmarkTitle" required>
+			<input type="text" placeholder="URL?" ng-model="newBookmark.url" name="newBookmarkUrl" required>
+			<select class="addSelect" ng-model="newBookmark.category" name="newBookmarkCategory" required>
+				<option value="" disabled>Category?</option>
+				<option ng-repeat="category in create.datastore.categories" value="{{category.name}}">{{category.name}}</option>
+			</select>
+			<input type="submit" ng-disabled="create.form.$invalid" ng-click="createBookmark(newBookmark,create.form)" value="Submit">
+			<input type="button" ng-click="create.cancelCreating(create.form)" value="cancel">
+			<div class="messages">
+				<span class="message-alert--valid"
+							ng-show="create.form.$valid">
+					Your bookmark is valid!
+				</span>
+				<span class="message-alert--invalid"
+							ng-show="create.form.newBookmarkTitle.$error.required && create.form.newBookmarkTitle.$touched">
+					Your bookmark needs a title
+				</span>
+				<span class="message-alert--invalid"
+							ng-show="create.form.newBookmarkUrl.$error.required && create.form.newBookmarkUrl.$touched">
+					Your bookmark needs a url
+				</span>
+				<span class="message-alert--invalid"
+							ng-show="create.form.newBookmarkCategory.$error.required && create.form.newBookmarkCategory.$touched">
+					Your bookmark needs a category
+				</span>
+			</div>
+		</form>

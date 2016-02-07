@@ -3,65 +3,88 @@
 	angular.module('categories',[])
 	angular.module('bookmarks',[])
 	angular.module('bookmarker',['categories','bookmarks'])
-		.controller('bookmarkerMain', ['$scope', function($scope) {
+		.factory('datastore', function() {
 
-			$scope.bookmarks = [
-				{"id": 0, "title": "AngularJS", "url": "http://angularjs.org", "category": "Development"},
-				{"id": 1, "title": "Egghead.io", "url": "http://egghead.io", "category": "Development"},
-				{"id": 2, "title": "A List Apart", "url": "http://alistapart.com", "category": "Design"},
-				{"id": 3, "title": "One Page Love", "url": "http://onepagelove.com", "category": "Design"},
-				{"id": 4, "title": "MobilityWOD", "url": "http://www.mobilitywod.com", "category": "Exercise"},
-				{"id": 5, "title": "Robb Wolf", "url": "http://robbwolf.com", "category": "Exercise"},
-				{"id": 6, "title": "Senor Gif", "url": "http://membase.cheezburger.com/senorgif", "category": "Humor"},
-				{"id": 7, "title": "Wimp", "url": "http://wimp.com", "category": "Humor"},
-				{"id": 8, "title": "Dump", "url": "http://dump.com", "category": "Humor"}
-			]
+			return {
 
-			$scope.categories = [
-				{"id": 0, "name": "Development"},
-				{"id": 1, "name": "Design"},
-				{"id": 2, "name": "Exercise"},
-				{"id": 3, "name": "Humor"}
-			]
+				bookmarks: [
+					{"id": 0, "title": "AngularJS", "url": "http://angularjs.org", "category": "Development"},
+					{"id": 1, "title": "Egghead.io", "url": "http://egghead.io", "category": "Development"},
+					{"id": 2, "title": "A List Apart", "url": "http://alistapart.com", "category": "Design"},
+					{"id": 3, "title": "One Page Love", "url": "http://onepagelove.com", "category": "Design"},
+					{"id": 4, "title": "MobilityWOD", "url": "http://www.mobilitywod.com", "category": "Exercise"},
+					{"id": 5, "title": "Robb Wolf", "url": "http://robbwolf.com", "category": "Exercise"},
+					{"id": 6, "title": "Senor Gif", "url": "http://membase.cheezburger.com/senorgif", "category": "Humor"},
+					{"id": 7, "title": "Wimp", "url": "http://wimp.com", "category": "Humor"},
+					{"id": 8, "title": "Dump", "url": "http://dump.com", "category": "Humor"}
+				],
 
-			$scope.currentBookmark = {title: "",url: "",category:""}
-			$scope.currentCategory = null
-			$scope.isCreating = false
-			$scope.isEditing = false
+				categories: [
+					{"id": 0, "name": "Development"},
+					{"id": 1, "name": "Design"},
+					{"id": 2, "name": "Exercise"},
+					{"id": 3, "name": "Humor"}
+				],
 
-		}])
+				currentBookmark: {title: "",url: "",category:""},
+				currentCategory: null,
+				isCreating: false,
+				isEditing: false
 
-	function createBookmark($scope) {
+			}
 
-		var form = $scope.createForm
+		})
 
-		$scope.createBookmark = function(bookmark,form) {
-			bookmark.id = $scope.bookmarks.length
-			$scope.$parent.bookmarks.push(bookmark)
+	function categoryList(datastore) {
+
+		this.datastore = datastore
+
+		this.setCurrentCategory = function(category) { 
+			if (!category) { datastore.currentCategory = null }
+			else datastore.currentCategory = category
+			datastore.isCreating = false
+			datastore.isEditing = false
+		}
+
+		this.isCurrentCategory = function(category) {
+			if (category === null) { return false }
+			return datastore.currentCategory !== null && category.name === datastore.currentCategory.name
+		}
+	}
+
+	angular
+		.module('categories')
+		.controller('categoryList', ['datastore', categoryList])
+
+	function createBookmark(datastore) {
+
+		this.datastore = datastore
+
+		this.createBookmark = function(bookmark,form) {
+			bookmark.id = datastore.bookmarks.length
+			datastore.bookmarks.push(bookmark)
 			resetCreateForm(form)
 		}
 
-		$scope.cancelCreating = function(form) {
-			$scope.$parent.isCreating = false
-			console.log(form)
+		this.cancelCreating = function(form) {
 			resetCreateForm(form)
+			datastore.isCreating = false
+			console.log(form)
 		}
 
 		function resetCreateForm(form){
-			$scope.newBookmark = { title: '', url: '', category: $scope.$parent.currentCategory }
+			this.newBookmark = { title: '', url: '', category: datastore.currentCategory }
 			form.$setPristine()
 			form.$setUntouched()
 		}
 
-		$scope.shouldShowCreating = function() { return $scope.$parent.isCreating && !$scope.$parent.isEditing }
-
-		$scope.debug = function(form) { console.log(form) }
+		this.shouldShowCreating = function() { return datastore.isCreating && !datastore.isEditing }
 
 	}
 
 	angular
 		.module('bookmarks')
-		.controller('createBookmark', ['$scope', createBookmark])
+		.controller('createBookmark', ['datastore',createBookmark])
 
 	function createForm() {
 		return {
@@ -74,41 +97,47 @@
 		.module('bookmarks') 
 		.directive('createForm',createForm)
 
-	function deleteBookmark($scope) {
-		$scope.deleteBookmark = function(bookmark) {
-			var index = $scope.$parent.bookmarks.indexOf(bookmark)
-			$scope.$parent.bookmarks.splice(index, 1)
-			$scope.$parent.isEditing = false
-		}
-	}
+	function editBookmark(datastore) {
 
-	angular
-		.module('bookmarks')
-		.controller('deleteBookmark', ['$scope', deleteBookmark])
+		this.datastore = datastore
 
-	function editBookmark($scope) {
-
-		$scope.cancelEditing = function() {
-			$scope.$parent.isEditing = false
+		this.editedBookmark = {
+			title: datastore.currentBookmark.title,
+			url: datastore.currentBookmark.url,
+			category: datastore.currentBookmark.category
 		}
 
-		$scope.initEditForm = function() {
-			$scope.editedBookmark = {
-				title: $scope.$parent.currentBookmark.title,
-				url: $scope.$parent.currentBookmark.url,
-				category: $scope.$parent.currentBookmark.category
+		this.updateBookmark = function() {}
+
+		this.cancelEditing = function(form) {
+			resetEditForm(form)
+			datastore.isEditing = false
+		}
+
+		this.shouldShowEditing = function() {
+			return datastore.isEditing && !datastore.isCreating
+		}
+
+		function resetEditForm(form) {
+			this.editedBookmark = {
+				title: datastore.currentBookmark.title,
+				url: datastore.currentBookmark.url,
+				category: datastore.currentBookmark.category
 			}
+			form.$setPristine()
+			form.$setUntouched()
 		}
 
-		$scope.shouldShowEditing = function() {
-			$scope.initEditForm()
-			return $scope.$parent.isEditing && !$scope.$parent.isCreating
+		this.deleteBookmark = function(bookmark) {
+			var index = datastore.bookmarks.indexOf(bookmark)
+			datastore.bookmarks.splice(index, 1)
+			datastore.isEditing = false
 		}
 	}
 
 	angular
 		.module('bookmarks')
-		.controller('editBookmark', ['$scope', editBookmark])
+		.controller('editBookmark', ['datastore', editBookmark])
 
 	function editForm() {
 		return {
@@ -121,46 +150,25 @@
 		.module('bookmarks') 
 		.directive('editForm',editForm)
 
-	function listBookmark($scope) {
+	function listBookmark(datastore) {
 
-		$scope.startEditing = function(bookmark) {
-			$scope.$parent.isCreating = false
-			$scope.$parent.isEditing = true
-			$scope.$parent.currentBookmark = bookmark
+		this.datastore = datastore
+
+		this.startEditing = function(bookmark) {
+			datastore.isCreating = false
+			datastore.isEditing = true
+			datastore.currentBookmark = bookmark
 		}
 
-		$scope.startCreating = function() {
-			$scope.$parent.isCreating = true
-			$scope.$parent.isEditing = false
-			resetCreateForm()
-		}
-
-		function resetCreateForm(){
-			$scope.newBookmark = { title: '', url: '', category: $scope.$parent.currentCategory }
+		this.startCreating = function() {
+			datastore.isCreating = true
+			datastore.isEditing = false
 		}
 
 	}
 
 	angular
 		.module('bookmarks')
-		.controller('listBookmark', ['$scope', listBookmark])
-
-	function categoryList($scope) {
-		$scope.setCurrentCategory = function(category) { 
-			if (!category) { $scope.$parent.currentCategory = null }
-			else $scope.$parent.currentCategory = category
-			$scope.$parent.isCreating = false
-			$scope.$parent.isEditing = false
-		}
-
-		$scope.isCurrentCategory = function(category) {
-			if (category === null) { return false }
-			return $scope.$parent.currentCategory !== null && category.name === $scope.$parent.currentCategory.name
-		}
-	}
-
-	angular
-		.module('categories')
-		.controller('categoryList', ['$scope', categoryList])
+		.controller('listBookmark', ['datastore',listBookmark])
 
 })()
