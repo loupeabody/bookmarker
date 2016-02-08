@@ -35,6 +35,8 @@
 		}
 
 		this.deleteBookmark = function() {
+			// complicates the id situation, datastore/db will
+			// likely solve this for us, but still...
 			var index = datastore.bookmarks.map(function(e) { return e.id }).indexOf(that.editedBookmark.id)
 			datastore.bookmarks.splice(index, 1)
 			datastore.isEditing = false

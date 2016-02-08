@@ -1,23 +1,28 @@
 	function createBookmark(datastore) {
 
+		var that = this
 		this.datastore = datastore
 
-		this.createBookmark = function(bookmark,form) {
-			bookmark.id = datastore.bookmarks.length
-			datastore.bookmarks.push(bookmark)
-			resetCreateForm(form)
+		// can add a $rootScope event to
+		// update the value of the category field
+		// with the currentCategory
+
+		this.createBookmark = function() {
+			// needs a better solution for unique ids
+			that.newBookmark.id = datastore.bookmarks.length
+			datastore.bookmarks.push(that.newBookmark)
+			resetCreateForm()
 		}
 
-		this.cancelCreating = function(form) {
-			resetCreateForm(form)
+		this.cancelCreating = function() {
+			resetCreateForm()
 			datastore.isCreating = false
-			console.log(form)
 		}
 
-		function resetCreateForm(form){
-			this.newBookmark = { title: '', url: '', category: datastore.currentCategory }
-			form.$setPristine()
-			form.$setUntouched()
+		function resetCreateForm(){
+			that.newBookmark = null
+			that.form.$setPristine()
+			that.form.$setUntouched()
 		}
 
 		this.shouldShowCreating = function() { return datastore.isCreating && !datastore.isEditing }

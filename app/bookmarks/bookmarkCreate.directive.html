@@ -2,14 +2,21 @@
 			<div class="messages">
 				<span class="message-alert">Add a new bookmark</span>
 			</div>
-			<input type="text" placeholder="Title?" ng-model="newBookmark.title" name="newBookmarkTitle" required>
-			<input type="text" placeholder="URL?" ng-model="newBookmark.url" name="newBookmarkUrl" required>
-			<select class="addSelect" ng-model="newBookmark.category" name="newBookmarkCategory" required>
+			<input type="text" 
+						 placeholder="Title?"
+						 ng-model="create.newBookmark.title"
+						 name="newBookmarkTitle"
+						 required>
+			<input type="text"
+						 placeholder="URL?"
+						 ng-model="create.newBookmark.url"
+						 name="newBookmarkUrl"required>
+			<select class="addSelect" ng-model="create.newBookmark.category" name="newBookmarkCategory" required>
 				<option value="" disabled>Category?</option>
 				<option ng-repeat="category in create.datastore.categories" value="{{category.name}}">{{category.name}}</option>
 			</select>
-			<input type="submit" ng-disabled="create.form.$invalid" ng-click="createBookmark(newBookmark,create.form)" value="Submit">
-			<input type="button" ng-click="create.cancelCreating(create.form)" value="cancel">
+			<input type="submit" ng-disabled="create.form.$invalid" ng-click="create.createBookmark()" value="Submit">
+			<input type="button" ng-click="create.cancelCreating()" value="cancel">
 			<div class="messages">
 				<span class="message-alert--valid"
 							ng-show="create.form.$valid">
