@@ -3,7 +3,7 @@
 		var that = this
 		this.datastore = datastore
 
-		$rootScope.$on('editThis', function(e,bookmark) {
+		$rootScope.$on('editThisBookmark', function(e,bookmark) {
 			that.editedBookmark = {
 				title: bookmark.title,
 				url: bookmark.url,

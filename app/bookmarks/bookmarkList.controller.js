@@ -5,7 +5,7 @@
 		this.startEditing = function(bookmark) {
 			datastore.isCreating = false
 			datastore.isEditing = true
-			$rootScope.$emit('editThis',bookmark)
+			$rootScope.$emit('editThisBookmark',bookmark)
 		}
 
 		this.startCreating = function() {

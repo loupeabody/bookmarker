@@ -34,27 +34,6 @@
 
 		})
 
-	function categoryList(datastore) {
-
-		this.datastore = datastore
-
-		this.setCurrentCategory = function(category) { 
-			if (!category) { datastore.currentCategory = null }
-			else datastore.currentCategory = category
-			datastore.isCreating = false
-			datastore.isEditing = false
-		}
-
-		this.isCurrentCategory = function(category) {
-			if (category === null) { return false }
-			return datastore.currentCategory !== null && category.name === datastore.currentCategory.name
-		}
-	}
-
-	angular
-		.module('categories')
-		.controller('categoryList', ['datastore', categoryList])
-
 	function createBookmark(datastore) {
 
 		this.datastore = datastore
@@ -101,7 +80,7 @@
 		var that = this
 		this.datastore = datastore
 
-		$rootScope.$on('editThis', function(e,bookmark) {
+		$rootScope.$on('editThisBookmark', function(e,bookmark) {
 			that.editedBookmark = {
 				title: bookmark.title,
 				url: bookmark.url,
@@ -160,7 +139,7 @@
 		this.startEditing = function(bookmark) {
 			datastore.isCreating = false
 			datastore.isEditing = true
-			$rootScope.$emit('editThis',bookmark)
+			$rootScope.$emit('editThisBookmark',bookmark)
 		}
 
 		this.startCreating = function() {
@@ -173,5 +152,26 @@
 	angular
 		.module('bookmarks')
 		.controller('listBookmark', ['$rootScope','datastore',listBookmark])
+
+	function categoryList(datastore) {
+
+		this.datastore = datastore
+
+		this.setCurrentCategory = function(category) { 
+			if (!category) { datastore.currentCategory = null }
+			else datastore.currentCategory = category
+			datastore.isCreating = false
+			datastore.isEditing = false
+		}
+
+		this.isCurrentCategory = function(category) {
+			if (category === null) { return false }
+			return datastore.currentCategory !== null && category.name === datastore.currentCategory.name
+		}
+	}
+
+	angular
+		.module('categories')
+		.controller('categoryList', ['datastore', categoryList])
 
 })()

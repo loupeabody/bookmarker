@@ -80,7 +80,7 @@
 		<div ng-controller="listBookmark as list">
 			<h1 class="section-label">bookmarks</h1>
 			<ul>
-				<li ng-repeat="bookmark in list.datastore.bookmarks | filter:{category:currentCategory.name}">
+				<li ng-repeat="bookmark in list.datastore.bookmarks | filter:{category:list.datastore.currentCategory.name}">
 					<a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a>
 					<button ng-click="list.startEditing(bookmark)">edit</button>
 				</li>
