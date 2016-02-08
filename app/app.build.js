@@ -34,6 +34,27 @@
 
 		})
 
+	function categoryList(datastore) {
+
+		this.datastore = datastore
+
+		this.setCurrentCategory = function(category) { 
+			if (!category) { datastore.currentCategory = null }
+			else datastore.currentCategory = category
+			datastore.isCreating = false
+			datastore.isEditing = false
+		}
+
+		this.isCurrentCategory = function(category) {
+			if (category === null) { return false }
+			return datastore.currentCategory !== null && category.name === datastore.currentCategory.name
+		}
+	}
+
+	angular
+		.module('categories')
+		.controller('categoryList', ['datastore', categoryList])
+
 	function createBookmark(datastore) {
 
 		this.datastore = datastore
@@ -93,10 +114,11 @@
 			var index = datastore.bookmarks.map(function(e) { return e.id }).indexOf(that.editedBookmark.id)
 			datastore.bookmarks.splice(index,1,that.editedBookmark)
 			datastore.isEditing = false
+			resetEditForm()
 		}
 
-		this.cancelEditing = function(form) {
-			resetEditForm(form)
+		this.cancelEditing = function() {
+			resetEditForm()
 			datastore.isEditing = false
 		}
 
@@ -104,13 +126,13 @@
 			return datastore.isEditing && !datastore.isCreating
 		}
 
-		function resetEditForm(form) {
+		function resetEditForm() {
 			that.editedBookmark = null
-			form.$setPristine()
-			form.$setUntouched()
+			that.form.$setPristine()
+			that.form.$setUntouched()
 		}
 
-		this.deleteBookmark = function(bookmark) {
+		this.deleteBookmark = function() {
 			var index = datastore.bookmarks.map(function(e) { return e.id }).indexOf(that.editedBookmark.id)
 			datastore.bookmarks.splice(index, 1)
 			datastore.isEditing = false
@@ -152,26 +174,5 @@
 	angular
 		.module('bookmarks')
 		.controller('listBookmark', ['$rootScope','datastore',listBookmark])
-
-	function categoryList(datastore) {
-
-		this.datastore = datastore
-
-		this.setCurrentCategory = function(category) { 
-			if (!category) { datastore.currentCategory = null }
-			else datastore.currentCategory = category
-			datastore.isCreating = false
-			datastore.isEditing = false
-		}
-
-		this.isCurrentCategory = function(category) {
-			if (category === null) { return false }
-			return datastore.currentCategory !== null && category.name === datastore.currentCategory.name
-		}
-	}
-
-	angular
-		.module('categories')
-		.controller('categoryList', ['datastore', categoryList])
 
 })()

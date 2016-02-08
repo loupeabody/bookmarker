@@ -16,10 +16,11 @@
 			var index = datastore.bookmarks.map(function(e) { return e.id }).indexOf(that.editedBookmark.id)
 			datastore.bookmarks.splice(index,1,that.editedBookmark)
 			datastore.isEditing = false
+			resetEditForm()
 		}
 
-		this.cancelEditing = function(form) {
-			resetEditForm(form)
+		this.cancelEditing = function() {
+			resetEditForm()
 			datastore.isEditing = false
 		}
 
@@ -27,13 +28,13 @@
 			return datastore.isEditing && !datastore.isCreating
 		}
 
-		function resetEditForm(form) {
+		function resetEditForm() {
 			that.editedBookmark = null
-			form.$setPristine()
-			form.$setUntouched()
+			that.form.$setPristine()
+			that.form.$setUntouched()
 		}
 
-		this.deleteBookmark = function(bookmark) {
+		this.deleteBookmark = function() {
 			var index = datastore.bookmarks.map(function(e) { return e.id }).indexOf(that.editedBookmark.id)
 			datastore.bookmarks.splice(index, 1)
 			datastore.isEditing = false
