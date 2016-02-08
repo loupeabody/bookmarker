@@ -24,7 +24,6 @@
 					{"id": 3, "name": "Humor"}
 				],
 
-				currentBookmark: {title: "",url: "",category:""},
 				currentCategory: null,
 				isCreating: false,
 				isEditing: false

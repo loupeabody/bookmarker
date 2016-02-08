@@ -1,12 +1,15 @@
-	function editBookmark(datastore) {
+	function editBookmark($rootScope,datastore) {
 
+		var that = this
 		this.datastore = datastore
 
-		this.editedBookmark = {
-			title: datastore.currentBookmark.title,
-			url: datastore.currentBookmark.url,
-			category: datastore.currentBookmark.category
-		}
+		$rootScope.$on('editThis', function(e,bookmark) {
+			that.editedBookmark = {
+				title: bookmark.title,
+				url: bookmark.url,
+				category: bookmark.category
+			}
+		})
 
 		this.updateBookmark = function() {}
 
@@ -20,11 +23,7 @@
 		}
 
 		function resetEditForm(form) {
-			this.editedBookmark = {
-				title: datastore.currentBookmark.title,
-				url: datastore.currentBookmark.url,
-				category: datastore.currentBookmark.category
-			}
+			that.editedBookmark = null
 			form.$setPristine()
 			form.$setUntouched()
 		}
@@ -38,4 +37,4 @@
 
 	angular
 		.module('bookmarks')
-		.controller('editBookmark', ['datastore', editBookmark])
+		.controller('editBookmark', ['$rootScope','datastore', editBookmark])

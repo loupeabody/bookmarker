@@ -26,7 +26,6 @@
 					{"id": 3, "name": "Humor"}
 				],
 
-				currentBookmark: {title: "",url: "",category:""},
 				currentCategory: null,
 				isCreating: false,
 				isEditing: false
@@ -34,27 +33,6 @@
 			}
 
 		})
-
-	function categoryList(datastore) {
-
-		this.datastore = datastore
-
-		this.setCurrentCategory = function(category) { 
-			if (!category) { datastore.currentCategory = null }
-			else datastore.currentCategory = category
-			datastore.isCreating = false
-			datastore.isEditing = false
-		}
-
-		this.isCurrentCategory = function(category) {
-			if (category === null) { return false }
-			return datastore.currentCategory !== null && category.name === datastore.currentCategory.name
-		}
-	}
-
-	angular
-		.module('categories')
-		.controller('categoryList', ['datastore', categoryList])
 
 	function createBookmark(datastore) {
 
@@ -97,15 +75,18 @@
 		.module('bookmarks') 
 		.directive('createForm',createForm)
 
-	function editBookmark(datastore) {
+	function editBookmark($rootScope,datastore) {
 
+		var that = this
 		this.datastore = datastore
 
-		this.editedBookmark = {
-			title: datastore.currentBookmark.title,
-			url: datastore.currentBookmark.url,
-			category: datastore.currentBookmark.category
-		}
+		$rootScope.$on('editThis', function(e,bookmark) {
+			that.editedBookmark = {
+				title: bookmark.title,
+				url: bookmark.url,
+				category: bookmark.category
+			}
+		})
 
 		this.updateBookmark = function() {}
 
@@ -119,11 +100,7 @@
 		}
 
 		function resetEditForm(form) {
-			this.editedBookmark = {
-				title: datastore.currentBookmark.title,
-				url: datastore.currentBookmark.url,
-				category: datastore.currentBookmark.category
-			}
+			that.editedBookmark = null
 			form.$setPristine()
 			form.$setUntouched()
 		}
@@ -137,7 +114,7 @@
 
 	angular
 		.module('bookmarks')
-		.controller('editBookmark', ['datastore', editBookmark])
+		.controller('editBookmark', ['$rootScope','datastore', editBookmark])
 
 	function editForm() {
 		return {
@@ -150,14 +127,14 @@
 		.module('bookmarks') 
 		.directive('editForm',editForm)
 
-	function listBookmark(datastore) {
+	function listBookmark($rootScope,datastore) {
 
 		this.datastore = datastore
 
 		this.startEditing = function(bookmark) {
 			datastore.isCreating = false
 			datastore.isEditing = true
-			datastore.currentBookmark = bookmark
+			$rootScope.$emit('editThis',bookmark)
 		}
 
 		this.startCreating = function() {
@@ -169,6 +146,27 @@
 
 	angular
 		.module('bookmarks')
-		.controller('listBookmark', ['datastore',listBookmark])
+		.controller('listBookmark', ['$rootScope','datastore',listBookmark])
+
+	function categoryList(datastore) {
+
+		this.datastore = datastore
+
+		this.setCurrentCategory = function(category) { 
+			if (!category) { datastore.currentCategory = null }
+			else datastore.currentCategory = category
+			datastore.isCreating = false
+			datastore.isEditing = false
+		}
+
+		this.isCurrentCategory = function(category) {
+			if (category === null) { return false }
+			return datastore.currentCategory !== null && category.name === datastore.currentCategory.name
+		}
+	}
+
+	angular
+		.module('categories')
+		.controller('categoryList', ['datastore', categoryList])
 
 })()

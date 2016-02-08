@@ -1,11 +1,11 @@
-	function listBookmark(datastore) {
+	function listBookmark($rootScope,datastore) {
 
 		this.datastore = datastore
 
 		this.startEditing = function(bookmark) {
 			datastore.isCreating = false
 			datastore.isEditing = true
-			datastore.currentBookmark = bookmark
+			$rootScope.$emit('editThis',bookmark)
 		}
 
 		this.startCreating = function() {
@@ -17,4 +17,4 @@
 
 	angular
 		.module('bookmarks')
-		.controller('listBookmark', ['datastore',listBookmark])
+		.controller('listBookmark', ['$rootScope','datastore',listBookmark])
