@@ -8,10 +8,10 @@
 		[x] make current category placeholder in add mode
 		\*\*\* USE TWO-WAY DATA BINDING, they want you to... \*\*\*
 [x] Make target bookmark populate values in edit mode
-[ ] Delay update of edited or created bookmarks until submission
-[ ] Break code into modules, utilize best practices
+[x] Delay update of edited or created bookmarks until submission
+[x] Break code into modules, utilize best practices
+[x] Use JSData for local datastore
 [ ] Write unit tests for controllers
-[ ] Use JSData for local datastore
 
 #~ * ~ * ~ * ~ Usability Design ~ * ~ * ~ * ~
 

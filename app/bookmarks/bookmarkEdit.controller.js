@@ -1,4 +1,4 @@
-	function editBookmark($rootScope,datastore) {
+	function editBookmark($rootScope,datastore,Bookmarks) {
 
 		var that = this
 		this.datastore = datastore
@@ -13,10 +13,28 @@
 		})
 
 		this.updateBookmark = function() {
-			var index = datastore.bookmarks.map(function(e) { return e.id }).indexOf(that.editedBookmark.id)
-			datastore.bookmarks.splice(index,1,that.editedBookmark)
-			datastore.isEditing = false
-			resetEditForm()
+			Bookmarks.find(that.editedBookmark.id).then(function(b) {
+
+				b.title = that.editedBookmark.title
+				b.url = that.editedBookmark.url
+				b.category = that.editedBookmark.category
+
+				return Bookmarks.save(b.id)
+
+			}).then(function() {
+				datastore.isEditing = false
+				resetEditForm()
+			})
+		}
+
+		this.deleteBookmark = function() {
+			// complicates the id situation, datastore/db will
+			// likely solve this for us, but still...
+			Bookmarks.destroy(that.editedBookmark.id).then(function() {
+				resetEditForm()
+				$rootScope.$emit('bookmarkDeleted')
+				datastore.isEditing = false
+			})
 		}
 
 		this.cancelEditing = function() {
@@ -34,15 +52,8 @@
 			that.form.$setUntouched()
 		}
 
-		this.deleteBookmark = function() {
-			// complicates the id situation, datastore/db will
-			// likely solve this for us, but still...
-			var index = datastore.bookmarks.map(function(e) { return e.id }).indexOf(that.editedBookmark.id)
-			datastore.bookmarks.splice(index, 1)
-			datastore.isEditing = false
-		}
 	}
 
 	angular
 		.module('bookmarks')
-		.controller('editBookmark', ['$rootScope','datastore', editBookmark])
+		.controller('editBookmark', ['$rootScope','datastore','Bookmarks', editBookmark])

@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title>Bookmarker</title>
 		<style>
 			html { box-sizing: border-box; }
 			*,*:before,*:after { box-sizing: inherit; }
@@ -79,8 +80,9 @@
 		</header>
 		<div ng-controller="listBookmark as list">
 			<h1 class="section-label">bookmarks</h1>
+			<small ng-show="list.bookmarks.length == 0"><i>there are no bookmarks</i></small>
 			<ul>
-				<li ng-repeat="bookmark in list.datastore.bookmarks | filter:{category:list.datastore.currentCategory.name}">
+				<li ng-repeat="bookmark in list.bookmarks | filter:{category:list.datastore.currentCategory.name}">
 					<a href="{{bookmark.url}}" target="_blank">{{bookmark.title}}</a>
 					<button ng-click="list.startEditing(bookmark)">edit</button>
 				</li>
@@ -96,6 +98,7 @@
 		</div>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-rc.0/angular.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-data/2.8.2/js-data.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-data-localstorage/2.3.2/js-data-localstorage.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/js-data-angular/3.1.0/js-data-angular.js"></script>
 		<script src="app/app.build.js"></script>
 	</body>

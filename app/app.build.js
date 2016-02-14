@@ -1,23 +1,22 @@
 (function() {
 
 	angular.module('categories',[])
-	angular.module('bookmarks',[])
+	angular.module('bookmarks',['js-data'])
+		.config(['DSProvider','DSLocalStorageAdapterProvider', function(DSProvider,DSLocalStorageAdapterProvider) {
+			angular.extend(DSProvider.defaults,{})
+			angular.extend(DSLocalStorageAdapterProvider.defaults,{})
+		}])
+		.run(function(DS,DSLocalStorageAdapter) {
+			DS.registerAdapter('localstorage', DSLocalStorageAdapter, { default: true })
+		})
+		.factory('Bookmarks', function(DS,$window) {
+			$window.localStorage.clear()
+			return DS.defineResource('bookmark')
+		})
 	angular.module('bookmarker',['categories','bookmarks'])
 		.factory('datastore', function() {
 
 			return {
-
-				bookmarks: [
-					{"id": 0, "title": "AngularJS", "url": "http://angularjs.org", "category": "Development"},
-					{"id": 1, "title": "Egghead.io", "url": "http://egghead.io", "category": "Development"},
-					{"id": 2, "title": "A List Apart", "url": "http://alistapart.com", "category": "Design"},
-					{"id": 3, "title": "One Page Love", "url": "http://onepagelove.com", "category": "Design"},
-					{"id": 4, "title": "MobilityWOD", "url": "http://www.mobilitywod.com", "category": "Exercise"},
-					{"id": 5, "title": "Robb Wolf", "url": "http://robbwolf.com", "category": "Exercise"},
-					{"id": 6, "title": "Senor Gif", "url": "http://membase.cheezburger.com/senorgif", "category": "Humor"},
-					{"id": 7, "title": "Wimp", "url": "http://wimp.com", "category": "Humor"},
-					{"id": 8, "title": "Dump", "url": "http://dump.com", "category": "Humor"}
-				],
 
 				categories: [
 					{"id": 0, "name": "Development"},
@@ -34,7 +33,7 @@
 
 		})
 
-	function createBookmark(datastore) {
+	function createBookmark($rootScope,datastore,Bookmarks) {
 
 		var that = this
 		this.datastore = datastore
@@ -44,10 +43,10 @@
 		// with the currentCategory
 
 		this.createBookmark = function() {
-			// needs a better solution for unique ids
-			that.newBookmark.id = datastore.bookmarks.length
-			datastore.bookmarks.push(that.newBookmark)
-			resetCreateForm()
+			Bookmarks.create(that.newBookmark).then(function() {
+				resetCreateForm()
+				$rootScope.$emit('newBookmarkCreated')
+			})
 		}
 
 		this.cancelCreating = function() {
@@ -67,7 +66,7 @@
 
 	angular
 		.module('bookmarks')
-		.controller('createBookmark', ['datastore',createBookmark])
+		.controller('createBookmark', ['$rootScope','datastore','Bookmarks',createBookmark])
 
 	function createForm() {
 		return {
@@ -80,7 +79,7 @@
 		.module('bookmarks') 
 		.directive('createForm',createForm)
 
-	function editBookmark($rootScope,datastore) {
+	function editBookmark($rootScope,datastore,Bookmarks) {
 
 		var that = this
 		this.datastore = datastore
@@ -95,10 +94,28 @@
 		})
 
 		this.updateBookmark = function() {
-			var index = datastore.bookmarks.map(function(e) { return e.id }).indexOf(that.editedBookmark.id)
-			datastore.bookmarks.splice(index,1,that.editedBookmark)
-			datastore.isEditing = false
-			resetEditForm()
+			Bookmarks.find(that.editedBookmark.id).then(function(b) {
+
+				b.title = that.editedBookmark.title
+				b.url = that.editedBookmark.url
+				b.category = that.editedBookmark.category
+
+				return Bookmarks.save(b.id)
+
+			}).then(function() {
+				datastore.isEditing = false
+				resetEditForm()
+			})
+		}
+
+		this.deleteBookmark = function() {
+			// complicates the id situation, datastore/db will
+			// likely solve this for us, but still...
+			Bookmarks.destroy(that.editedBookmark.id).then(function() {
+				resetEditForm()
+				$rootScope.$emit('bookmarkDeleted')
+				datastore.isEditing = false
+			})
 		}
 
 		this.cancelEditing = function() {
@@ -116,18 +133,11 @@
 			that.form.$setUntouched()
 		}
 
-		this.deleteBookmark = function() {
-			// complicates the id situation, datastore/db will
-			// likely solve this for us, but still...
-			var index = datastore.bookmarks.map(function(e) { return e.id }).indexOf(that.editedBookmark.id)
-			datastore.bookmarks.splice(index, 1)
-			datastore.isEditing = false
-		}
 	}
 
 	angular
 		.module('bookmarks')
-		.controller('editBookmark', ['$rootScope','datastore', editBookmark])
+		.controller('editBookmark', ['$rootScope','datastore','Bookmarks', editBookmark])
 
 	function editForm() {
 		return {
@@ -140,9 +150,15 @@
 		.module('bookmarks') 
 		.directive('editForm',editForm)
 
-	function listBookmark($rootScope,datastore) {
+	function listBookmark($rootScope,datastore,Bookmarks) {
 
+		var that = this
 		this.datastore = datastore
+
+		addDefaultBookmarks(updateBookmarksInControllerScope)
+		$rootScope.$on('newBookmarkCreated', updateBookmarksInControllerScope)
+		// try resource#haschanges
+		$rootScope.$on('bookmarkDeleted', updateBookmarksInControllerScope)
 
 		this.startEditing = function(bookmark) {
 			datastore.isCreating = false
@@ -155,11 +171,28 @@
 			datastore.isEditing = false
 		}
 
+		function updateBookmarksInControllerScope() {
+			Bookmarks.digest()
+			Bookmarks.findAll({},{bypassCache: true}).then(function(p) { that.bookmarks = p })
+		}
+
+		function addDefaultBookmarks(cb) {
+			Bookmarks.create({title: "AngularJS", url: "http://angularjs.org", category: "Development"}).then(cb)
+			Bookmarks.create({title: "Egghead.io", url: "http://egghead.io", category: "Development"}).then(cb)
+			Bookmarks.create({title: "A List Apart", url: "http://alistapart.com", category: "Design"}).then(cb)
+			Bookmarks.create({title: "One Page Love", url: "http://onepagelove.com", category: "Design"}).then(cb)
+			Bookmarks.create({title: "MobilityWOD", url: "http://www.mobilitywod.com", category: "Exercise"}).then(cb)
+			Bookmarks.create({title: "Robb Wolf", url: "http://robbwolf.com", category: "Exercise"}).then(cb)
+			Bookmarks.create({title: "Senor Gif", url: "http://membase.cheezburger.com/senorgif", category: "Humor"}).then(cb)
+			Bookmarks.create({title: "Wimp", url: "http://wimp.com", category: "Humor"}).then(cb)
+			Bookmarks.create({title: "Dump", url: "http://dump.com", category: "Humor"}).then(cb)
+		}
+
 	}
 
 	angular
 		.module('bookmarks')
-		.controller('listBookmark', ['$rootScope','datastore',listBookmark])
+		.controller('listBookmark', ['$rootScope','datastore','Bookmarks',listBookmark])
 
 	function categoryList(datastore) {
 

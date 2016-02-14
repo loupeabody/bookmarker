@@ -1,4 +1,4 @@
-	function createBookmark(datastore) {
+	function createBookmark($rootScope,datastore,Bookmarks) {
 
 		var that = this
 		this.datastore = datastore
@@ -8,10 +8,10 @@
 		// with the currentCategory
 
 		this.createBookmark = function() {
-			// needs a better solution for unique ids
-			that.newBookmark.id = datastore.bookmarks.length
-			datastore.bookmarks.push(that.newBookmark)
-			resetCreateForm()
+			Bookmarks.create(that.newBookmark).then(function() {
+				resetCreateForm()
+				$rootScope.$emit('newBookmarkCreated')
+			})
 		}
 
 		this.cancelCreating = function() {
@@ -31,4 +31,4 @@
 
 	angular
 		.module('bookmarks')
-		.controller('createBookmark', ['datastore',createBookmark])
+		.controller('createBookmark', ['$rootScope','datastore','Bookmarks',createBookmark])
