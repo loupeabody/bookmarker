@@ -109,8 +109,6 @@
 		}
 
 		this.deleteBookmark = function() {
-			// complicates the id situation, datastore/db will
-			// likely solve this for us, but still...
 			Bookmarks.destroy(that.editedBookmark.id).then(function() {
 				resetEditForm()
 				$rootScope.$emit('bookmarkDeleted')

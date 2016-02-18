@@ -9,12 +9,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "babel-polyfill": "^6.5.0",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
+    "gulp-livereload": "^3.8.1",
     "jasmine": "^2.4.1",
-    "karma": "^0.13.17"
-  },
-  "dependencies": {
-    "gulp-livereload": "^3.8.1"
+    "karma": "^0.13.17",
+    "karma-jasmine": "^0.3.7",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "phantomjs-prebuilt": "^2.1.4"
   }
 }
