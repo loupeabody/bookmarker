@@ -82,6 +82,7 @@
 	function editBookmark($rootScope,datastore,Bookmarks) {
 
 		var that = this
+		this.that = this
 		this.datastore = datastore
 
 		$rootScope.$on('editThisBookmark', function(e,bookmark) {
@@ -104,31 +105,25 @@
 
 			}).then(function() {
 				datastore.isEditing = false
-				resetEditForm()
+				that.editedBookmark = null
 			})
 		}
 
 		this.deleteBookmark = function() {
 			Bookmarks.destroy(that.editedBookmark.id).then(function() {
-				resetEditForm()
+				that.editedBookmark = null
 				$rootScope.$emit('bookmarkDeleted')
 				datastore.isEditing = false
 			})
 		}
 
 		this.cancelEditing = function() {
-			resetEditForm()
+			that.editedBookmark = null
 			datastore.isEditing = false
 		}
 
 		this.shouldShowEditing = function() {
 			return datastore.isEditing && !datastore.isCreating
-		}
-
-		function resetEditForm() {
-			that.editedBookmark = null
-			that.form.$setPristine()
-			that.form.$setUntouched()
 		}
 
 	}

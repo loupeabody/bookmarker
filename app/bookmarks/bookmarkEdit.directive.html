@@ -14,9 +14,9 @@
 				<option value="" disabled>Category?</option>
 				<option ng-repeat="category in edit.datastore.categories" value="{{category.name}}">{{category.name}}</option>
 			</select>
-			<input type="submit" ng-disabled="edit.form.$invalid" ng-click="edit.updateBookmark()" value="Submit">
-			<input type="button" ng-click="edit.cancelEditing()" value="cancel">
-			<input type="button" ng-click="edit.deleteBookmark()" value="delete">
+			<input type="submit" ng-disabled="edit.form.$invalid" ng-submit="edit.updateBookmark(); edit.form.$setUntouched(); edit.form.$setPristine();" value="Submit">
+			<input type="button" ng-click="edit.cancelEditing(); edit.form.$setUntouched(); edit.form.$setPristine();" value="cancel">
+			<input type="button" ng-click="edit.deleteBookmark(); edit.form.$setUntouched(); edit.form.$setPristine();" value="delete">
 			<div class="messages">
 				<span class="message-alert--valid"
 							ng-show="edit.form.$valid && edit.form.$dirty">

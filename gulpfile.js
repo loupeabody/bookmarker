@@ -31,7 +31,7 @@ gulp.task('build', function() {
 
 gulp.task('watch', function() {
 	livereload.listen()
-	gulp.watch(paths.scripts, ['build']/* test */)
+	gulp.watch(paths.scripts, ['build','test'])
 	gulp.watch('index.html', function() { livereload.reload() })
 })
 

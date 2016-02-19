@@ -1,44 +1,49 @@
 describe('editBookmark', function() {
 	var $rootScope,
+			$controller,
 			datastore,
 			Bookmarks,
-			createController
+			scope,
+			edit
 
 	beforeEach(module('bookmarker'))
 
-	beforeEach(inject(function(_$rootScope_,$templateCache,$compile,$controller,_Bookmarks_,_datastore_) {
+	beforeEach(inject(function(_$rootScope_,_$controller_,_Bookmarks_,_datastore_) {
 		$rootScope = _$rootScope_
+		scope = $rootScope.$new()
 		datastore = _datastore_
 		Bookmarks = _Bookmarks_
+		$controller = _$controller_
 
-		var formDirective = $templateCache.get('app/bookmarks/editBookmark.directive.html')
-		$rootScope.form = $compile(formDirective)($rootScope)
-		$rootScope.$digest()
-
-		createController = function() { return $controller('editBookmark',{},{form: $rootScope.form,datastore: datastore}) }
+		edit = $controller('editBookmark',{$scope: scope},{datastore: datastore, Bookmarks: Bookmarks})
 	}))
 
-	describe('updateBookmark',function(){
-		it('', function() {
-
+	describe('utilities', function() {
+		it('should have a stored refrence to \'this\' named \'that\'', function() {
+			expect(edit.that).toBe(edit)
 		})
 	})
 
-	describe('deleteBookmark',function(){
-		it('', function() {
+	// describe('updateBookmark',function(){
+	// 	it('', function() {
 
-		})
-	})
+	// 	})
+	// })
 
-	describe('shouldShowEditing',function(){
-		it('', function() {
+	// describe('deleteBookmark',function(){
+	// 	it('', function() {
 
-		})
-	})
+	// 	})
+	// })
+
+	// describe('shouldShowEditing',function(){
+	// 	it('', function() {
+
+	// 	})
+	// })
 
 	describe('cancelEditing',function(){
 		it('should toggle the \'isEditing\' flag to false', function() {
-			var edit = createController()
 			edit.cancelEditing()
 			expect(edit.datastore.isEditing).toBe(false)
 		})
