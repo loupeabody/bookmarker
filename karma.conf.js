@@ -12,7 +12,7 @@ module.exports = function(config) {
       'app/**/*.controller.js',
       'app/**/*.spec.js'
     ],
-    reporters: ['dots'],
+    reporters: ['verbose'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
